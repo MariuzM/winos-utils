@@ -33,7 +33,7 @@ internal static class Program
                     return Save(Snip.FullScreenAsync());
 
                 case "--window":
-                    return Save(Snip.WindowAsync(ResolveWindow(args)));
+                    return Save(Snip.WindowAsync(ResolveWindow(args), HasArgument(args, "--shadow")));
 
                 case "--region":
                     return Save(Snip.RegionAsync(ParseRegion(args)));
@@ -73,6 +73,17 @@ internal static class Program
         }
 
         return new IntPtr(long.Parse(args[1]));
+    }
+
+    private static bool HasArgument(string[] args, string expected)
+    {
+        foreach (string value in args)
+        {
+            if (value.Equals(expected, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        return false;
     }
 
     private static RECT ParseRegion(string[] args)

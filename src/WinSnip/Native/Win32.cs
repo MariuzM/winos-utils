@@ -31,9 +31,19 @@ internal static unsafe partial class Win32
 
     [LibraryImport(User32, EntryPoint = "CreateWindowExW", StringMarshalling = StringMarshalling.Utf16)]
     public static partial IntPtr CreateWindowEx(
-        uint dwExStyle, string lpClassName, string lpWindowName, uint dwStyle,
-        int x, int y, int nWidth, int nHeight,
-        IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
+        uint dwExStyle,
+        string lpClassName,
+        string lpWindowName,
+        uint dwStyle,
+        int x,
+        int y,
+        int nWidth,
+        int nHeight,
+        IntPtr hWndParent,
+        IntPtr hMenu,
+        IntPtr hInstance,
+        IntPtr lpParam
+    );
 
     [LibraryImport(User32, EntryPoint = "DefWindowProcW")]
     public static partial IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
@@ -82,7 +92,14 @@ internal static unsafe partial class Win32
     [LibraryImport(User32, EntryPoint = "SetWindowPos")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool SetWindowPos(
-        IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+        IntPtr hWnd,
+        IntPtr hWndInsertAfter,
+        int x,
+        int y,
+        int cx,
+        int cy,
+        uint uFlags
+    );
 
     [LibraryImport(User32, EntryPoint = "SetForegroundWindow")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -98,6 +115,9 @@ internal static unsafe partial class Win32
     [LibraryImport(User32, EntryPoint = "GetWindowRect")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+    [LibraryImport(User32, EntryPoint = "GetDpiForWindow")]
+    public static partial uint GetDpiForWindow(IntPtr hWnd);
 
     [LibraryImport(User32, EntryPoint = "GetWindow")]
     public static partial IntPtr GetWindow(IntPtr hWnd, uint uCmd);
@@ -171,8 +191,7 @@ internal static unsafe partial class Win32
     public static partial bool AppendMenu(IntPtr hMenu, uint uFlags, IntPtr uIDNewItem, string? lpNewItem);
 
     [LibraryImport(User32, EntryPoint = "TrackPopupMenuEx")]
-    public static partial int TrackPopupMenuEx(
-        IntPtr hMenu, uint uFlags, int x, int y, IntPtr hwnd, IntPtr lptpm);
+    public static partial int TrackPopupMenuEx(IntPtr hMenu, uint uFlags, int x, int y, IntPtr hwnd, IntPtr lptpm);
 
     [LibraryImport(User32, EntryPoint = "DestroyMenu")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -181,12 +200,22 @@ internal static unsafe partial class Win32
     // ---- DWM --------------------------------------------------------------------
 
     [LibraryImport(Dwmapi, EntryPoint = "DwmGetWindowAttribute")]
-    public static partial int DwmGetWindowAttribute(IntPtr hwnd, uint dwAttribute, out int pvAttribute, int cbAttribute);
+    public static partial int DwmGetWindowAttribute(
+        IntPtr hwnd,
+        uint dwAttribute,
+        out int pvAttribute,
+        int cbAttribute
+    );
 
     // Second overload for DWMWA_EXTENDED_FRAME_BOUNDS. GetWindowRect on Win10/11 includes the
     // invisible resize border, which would put a band of desktop around every window capture.
     [LibraryImport(Dwmapi, EntryPoint = "DwmGetWindowAttribute")]
-    public static partial int DwmGetWindowAttributeRect(IntPtr hwnd, uint dwAttribute, out RECT pvAttribute, int cbAttribute);
+    public static partial int DwmGetWindowAttributeRect(
+        IntPtr hwnd,
+        uint dwAttribute,
+        out RECT pvAttribute,
+        int cbAttribute
+    );
 
     // ---- GDI (layered overlay) --------------------------------------------------
 
@@ -201,7 +230,13 @@ internal static unsafe partial class Win32
 
     [LibraryImport(Gdi32, EntryPoint = "CreateDIBSection")]
     public static partial IntPtr CreateDIBSection(
-        IntPtr hdc, BITMAPINFOHEADER* pbmi, uint usage, out void* ppvBits, IntPtr hSection, uint offset);
+        IntPtr hdc,
+        BITMAPINFOHEADER* pbmi,
+        uint usage,
+        out void* ppvBits,
+        IntPtr hSection,
+        uint offset
+    );
 
     [LibraryImport(Gdi32, EntryPoint = "SelectObject")]
     public static partial IntPtr SelectObject(IntPtr hdc, IntPtr h);
@@ -217,8 +252,16 @@ internal static unsafe partial class Win32
     [LibraryImport(User32, EntryPoint = "UpdateLayeredWindow")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool UpdateLayeredWindow(
-        IntPtr hWnd, IntPtr hdcDst, POINT* pptDst, SIZE* psize, IntPtr hdcSrc, POINT* pptSrc,
-        uint crKey, BLENDFUNCTION* pblend, uint dwFlags);
+        IntPtr hWnd,
+        IntPtr hdcDst,
+        POINT* pptDst,
+        SIZE* psize,
+        IntPtr hdcSrc,
+        POINT* pptSrc,
+        uint crKey,
+        BLENDFUNCTION* pblend,
+        uint dwFlags
+    );
 
     // ---- Direct3D 11 ------------------------------------------------------------
     //
@@ -230,9 +273,17 @@ internal static unsafe partial class Win32
 
     [LibraryImport(D3D11, EntryPoint = "D3D11CreateDevice")]
     public static partial int D3D11CreateDevice(
-        IntPtr pAdapter, int driverType, IntPtr software, uint flags,
-        IntPtr pFeatureLevels, uint featureLevels, uint sdkVersion,
-        out IntPtr ppDevice, IntPtr pFeatureLevel, IntPtr ppImmediateContext);
+        IntPtr pAdapter,
+        int driverType,
+        IntPtr software,
+        uint flags,
+        IntPtr pFeatureLevels,
+        uint featureLevels,
+        uint sdkVersion,
+        out IntPtr ppDevice,
+        IntPtr pFeatureLevel,
+        IntPtr ppImmediateContext
+    );
 
     // Despite living in a header named windows.graphics.directx.direct3d11.interop.h, this export
     // ships in d3d11.dll.

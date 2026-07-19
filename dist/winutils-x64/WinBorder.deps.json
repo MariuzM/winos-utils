@@ -1,0 +1,56 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0/win-x64",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {},
+    ".NETCoreApp,Version=v9.0/win-x64": {
+      "WinBorder/1.0.0": {
+        "dependencies": {
+          "Microsoft.DotNet.ILCompiler": "9.0.18",
+          "Microsoft.NET.ILLink.Tasks": "9.0.18"
+        },
+        "runtime": {
+          "WinBorder.dll": {}
+        }
+      },
+      "Microsoft.DotNet.ILCompiler/9.0.18": {
+        "dependencies": {
+          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "9.0.18"
+        }
+      },
+      "Microsoft.NET.ILLink.Tasks/9.0.18": {},
+      "runtime.win-x64.Microsoft.DotNet.ILCompiler/9.0.18": {}
+    }
+  },
+  "libraries": {
+    "WinBorder/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.DotNet.ILCompiler/9.0.18": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-u0avs3+Tz8J+ujvSEC7dkCx/oVcgcNZ1URJI+YLlzHpW09q5/qrOUWupWJmZmOnkyRfCoDL978LeZO3ukmYj6A==",
+      "path": "microsoft.dotnet.ilcompiler/9.0.18",
+      "hashPath": "microsoft.dotnet.ilcompiler.9.0.18.nupkg.sha512"
+    },
+    "Microsoft.NET.ILLink.Tasks/9.0.18": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ztGVXB28bi8SeplFmAx+4MkqP1ieA4UNzj/M3qyyz5tLa37Ln8x8LuaXdxzzoOdaucjQBKXSdCMFSbpQaNGIEg==",
+      "path": "microsoft.net.illink.tasks/9.0.18",
+      "hashPath": "microsoft.net.illink.tasks.9.0.18.nupkg.sha512"
+    },
+    "runtime.win-x64.Microsoft.DotNet.ILCompiler/9.0.18": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-h4K2kRYY+9rXEX9DAz8neZsoqMFWJ/fHascPT0pkpVpxHrtMNz74bELT/+7/IJdZb+Zfhvr9TMJAXWG/+BxfEg==",
+      "path": "runtime.win-x64.microsoft.dotnet.ilcompiler/9.0.18",
+      "hashPath": "runtime.win-x64.microsoft.dotnet.ilcompiler.9.0.18.nupkg.sha512"
+    }
+  }
+}

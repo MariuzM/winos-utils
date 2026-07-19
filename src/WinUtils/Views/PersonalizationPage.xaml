@@ -2,6 +2,7 @@
     x:Class="WinUtils.Views.PersonalizationPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:controls="clr-namespace:WinUtils.Controls">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" controls:WheelScroll.Proportional="True">
@@ -25,6 +26,90 @@
                     ApplyLabel="Apply &amp; restart Explorer"
                     CompliantTitle="Start menu already configured"
                     PendingMessage="Review the list below, then apply. Explorer will restart." />
+            </controls:ToolCard>
+
+            <controls:ToolCard
+                x:Name="DarkModeCard"
+                Icon="DarkTheme24"
+                Title="Windows color mode"
+                Status="Checking">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,14"
+                        Style="{StaticResource CaptionText}"
+                        FontSize="13"
+                        Text="Switch Windows surfaces and supported applications between dark and light mode." />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource BodyStrongText}" Text="Use dark mode" />
+                            <TextBlock
+                                x:Name="DarkModeStateText"
+                                Margin="0,2,0,0"
+                                Style="{StaticResource CaptionText}"
+                                Text="Checking current color mode." />
+                        </StackPanel>
+                        <ui:ToggleSwitch
+                            x:Name="DarkModeToggle"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Click="OnDarkModeToggle" />
+                    </Grid>
+
+                    <ui:InfoBar
+                        x:Name="DarkModeError"
+                        Margin="0,14,0,0"
+                        Severity="Error"
+                        IsClosable="True"
+                        IsOpen="False"
+                        Title="Color mode setting failed" />
+                </StackPanel>
+            </controls:ToolCard>
+
+            <controls:ToolCard
+                x:Name="WindowBordersCard"
+                Icon="BorderNone24"
+                Title="Window borders"
+                Status="Checking">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,14"
+                        Style="{StaticResource CaptionText}"
+                        FontSize="13"
+                        Text="Remove the bright DWM outline around supported Windows 11 windows. A tiny event-driven helper starts at sign-in and stays idle until a window is shown or activated." />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource BodyStrongText}" Text="Remove window borders" />
+                            <TextBlock
+                                x:Name="WindowBordersStateText"
+                                Margin="0,2,0,0"
+                                Style="{StaticResource CaptionText}"
+                                Text="Checking availability." />
+                        </StackPanel>
+                        <ui:ToggleSwitch
+                            x:Name="WindowBordersToggle"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Click="OnWindowBordersToggle" />
+                    </Grid>
+
+                    <ui:InfoBar
+                        x:Name="WindowBordersError"
+                        Margin="0,14,0,0"
+                        Severity="Error"
+                        IsClosable="True"
+                        IsOpen="False"
+                        Title="Window border setting failed" />
+                </StackPanel>
             </controls:ToolCard>
 
         </StackPanel>

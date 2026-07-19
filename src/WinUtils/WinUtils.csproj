@@ -9,8 +9,45 @@
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <WinBorderNativeAot>true</WinBorderNativeAot>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WPF-UI" Version="4.3.0" />
+    <Compile Include="..\WindowBorderProtocol.cs" Link="WindowBorderProtocol.cs" />
   </ItemGroup>
+
+  <Target Name="CopyWinBorderBuildOutput" AfterTargets="Build" Condition="'$(RuntimeIdentifier)' == ''">
+    <MSBuild
+      Projects="..\WinBorder\WinBorder.csproj"
+      Targets="Build"
+      Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+    <ItemGroup>
+      <WinBorderBuildFile
+        Include="..\WinBorder\bin\$(Configuration)\net9.0-windows\WinBorder*"
+        Exclude="..\WinBorder\bin\$(Configuration)\net9.0-windows\WinBorder.pdb" />
+    </ItemGroup>
+    <Copy SourceFiles="@(WinBorderBuildFile)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="PublishWinBorder" AfterTargets="Publish" Condition="'$(RuntimeIdentifier)' != ''">
+    <PropertyGroup>
+      <WinBorderPublishDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../WinBorder/bin/$(Configuration)/net9.0-windows/$(RuntimeIdentifier)/publish/'))</WinBorderPublishDir>
+    </PropertyGroup>
+    <MSBuild
+      Projects="..\WinBorder\WinBorder.csproj"
+      Targets="Publish"
+      Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier);PublishDir=$(WinBorderPublishDir);PublishAot=$(WinBorderNativeAot);PublishSingleFile=false;DebugSymbols=false;DebugType=None" />
+    <ItemGroup>
+      <WinBorderPublishFile Include="$(WinBorderPublishDir)WinBorder.exe" />
+      <WinBorderPublishFile
+        Condition="'$(WinBorderNativeAot)' != 'true'"
+        Include="$(WinBorderPublishDir)WinBorder.dll;$(WinBorderPublishDir)WinBorder.deps.json;$(WinBorderPublishDir)WinBorder.runtimeconfig.json" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(WinBorderPublishFile)"
+      DestinationFolder="$(PublishDir)" />
+    <Delete
+      Condition="'$(WinBorderNativeAot)' == 'true'"
+      Files="$(PublishDir)WinBorder.dll;$(PublishDir)WinBorder.deps.json;$(PublishDir)WinBorder.runtimeconfig.json;$(PublishDir)WinBorder.pdb" />
+  </Target>
 </Project>

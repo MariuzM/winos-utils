@@ -1,7 +1,8 @@
 using System.Windows;
-using Wpf.Ui.Abstractions;
-using Wpf.Ui.Controls;
 using WinUtils.Views;
+using Wpf.Ui.Abstractions;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace WinUtils;
 
@@ -10,6 +11,7 @@ public partial class MainWindow : FluentWindow
     public MainWindow()
     {
         InitializeComponent();
+        SystemThemeWatcher.Watch(this);
 
         // Without a provider the NavigationView would construct a fresh page on every
         // navigation, throwing away scan results when you switch groups and come back.

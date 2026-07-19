@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <RootNamespace>WinView</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x64;arm64</Platforms>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+    <!--
+      No WPF, no WinForms, no WinRT. Decoding goes through the GDI+ flat C API, which is already
+      proven in WinShell's Wallpaper.cs - flat exports mean no COM vtable dispatch to hand-write,
+      and gdiplus.dll is present on every Windows install. The cost of that choice is format
+      coverage: PNG/JPEG/GIF/BMP/TIFF/ICO only, no HEIC or WebP. Those need WIC.
+
+      Plain net9.0-windows on purpose: pulling in a versioned Windows TFM would drag in the 24 MB
+      WinRT projection that makes WinSnip large, for nothing this app needs.
+    -->
+    <EnableAotAnalyzer>true</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+</Project>

@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Microsoft.Win32;
 using WinSnip.Capture;
 using WinSnip.Native;
 using static WinSnip.Native.Win32Const;
@@ -11,6 +12,8 @@ namespace WinSnip.Ui;
 internal static class App
 {
     private const string ClassName = "WinSnip.Host";
+    private const string SettingsKeyPath = @"Software\WinSnip";
+    private const string WindowShadowValue = "IncludeWindowShadow";
     private const uint TrayId = 1;
 
     private const int HotkeyFullScreen = 1;
@@ -20,7 +23,8 @@ internal static class App
     private const int MenuFullScreen = 10;
     private const int MenuRegion = 11;
     private const int MenuWindow = 12;
-    private const int MenuExit = 13;
+    private const int MenuWindowShadow = 13;
+    private const int MenuExit = 14;
 
     private const int VK_1 = 0x31;
     private const int VK_2 = 0x32;
@@ -33,9 +37,12 @@ internal static class App
     private static IntPtr _hwnd;
     private static string _lastMessage = string.Empty;
     private static bool _lastFailed;
+    private static bool _includeWindowShadow;
 
     public static int Run()
     {
+        _includeWindowShadow = LoadWindowShadowSetting();
+
         if (!CaptureEngine.IsSupported())
         {
             Fatal("Windows.Graphics.Capture is not supported on this device.");
@@ -83,8 +90,19 @@ internal static class App
         // Never shown. It exists to receive WM_HOTKEY and the tray callback, both of which need a
         // window to be delivered to.
         _hwnd = Win32.CreateWindowEx(
-            WS_EX_TOOLWINDOW, ClassName, "WinSnip", WS_POPUP,
-            0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, Win32.GetModuleHandle(null), IntPtr.Zero);
+            WS_EX_TOOLWINDOW,
+            ClassName,
+            "WinSnip",
+            WS_POPUP,
+            0,
+            0,
+            0,
+            0,
+            IntPtr.Zero,
+            IntPtr.Zero,
+            Win32.GetModuleHandle(null),
+            IntPtr.Zero
+        );
 
         return _hwnd != IntPtr.Zero;
     }
@@ -184,6 +202,13 @@ internal static class App
             Win32.AppendMenu(menu, MF_STRING, new IntPtr(MenuRegion), "Capture region\tCtrl+Shift+2");
             Win32.AppendMenu(menu, MF_STRING, new IntPtr(MenuWindow), "Capture window\tCtrl+Shift+3");
             Win32.AppendMenu(menu, MF_SEPARATOR, IntPtr.Zero, null);
+            Win32.AppendMenu(
+                menu,
+                MF_STRING | (_includeWindowShadow ? MF_CHECKED : MF_UNCHECKED),
+                new IntPtr(MenuWindowShadow),
+                "Include window shadow"
+            );
+            Win32.AppendMenu(menu, MF_SEPARATOR, IntPtr.Zero, null);
             Win32.AppendMenu(menu, MF_STRING, new IntPtr(MenuExit), "Exit");
 
             Win32.GetCursorPos(out POINT cursor);
@@ -193,7 +218,13 @@ internal static class App
             Win32.SetForegroundWindow(_hwnd);
 
             int command = Win32.TrackPopupMenuEx(
-                menu, TPM_RETURNCMD | TPM_RIGHTBUTTON, cursor.X, cursor.Y, _hwnd, IntPtr.Zero);
+                menu,
+                TPM_RETURNCMD | TPM_RIGHTBUTTON,
+                cursor.X,
+                cursor.Y,
+                _hwnd,
+                IntPtr.Zero
+            );
 
             Dispatch(command);
         }
@@ -221,6 +252,10 @@ internal static class App
                 BeginWindowPick();
                 break;
 
+            case MenuWindowShadow:
+                ToggleWindowShadow();
+                break;
+
             case MenuExit:
                 Win32.PostQuitMessage(0);
                 break;
@@ -232,11 +267,38 @@ internal static class App
         if (Overlay.Active)
             return;
 
-        Overlay.ShowRegion(region => RunCapture(async () =>
+        Overlay.ShowRegion(region =>
+            RunCapture(async () =>
+            {
+                await Task.Delay(OverlaySettleMs);
+                return await Snip.RegionAsync(region);
+            })
+        );
+    }
+
+    private static bool LoadWindowShadowSetting()
+    {
+        try
         {
-            await Task.Delay(OverlaySettleMs);
-            return await Snip.RegionAsync(region);
-        }));
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(SettingsKeyPath, false);
+            return key?.GetValue(WindowShadowValue) is int value && value != 0;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static void ToggleWindowShadow()
+    {
+        _includeWindowShadow = !_includeWindowShadow;
+
+        try
+        {
+            using RegistryKey key = Registry.CurrentUser.CreateSubKey(SettingsKeyPath, true);
+            key.SetValue(WindowShadowValue, _includeWindowShadow ? 1 : 0, RegistryValueKind.DWord);
+        }
+        catch { }
     }
 
     private static void BeginWindowPick()
@@ -244,9 +306,16 @@ internal static class App
         if (Overlay.Active)
             return;
 
-        // No settle delay needed: a window capture reads that window's own composition surface, so
-        // the overlay was never part of it.
-        Overlay.ShowWindowPick(hwnd => RunCapture(() => Snip.WindowAsync(hwnd)));
+        bool includeShadow = _includeWindowShadow;
+        Overlay.ShowWindowPick(hwnd =>
+            RunCapture(async () =>
+            {
+                if (includeShadow)
+                    await Task.Delay(OverlaySettleMs);
+
+                return await Snip.WindowAsync(hwnd, includeShadow);
+            })
+        );
     }
 
     // Capture is asynchronous and must not block the message loop - the loop is what keeps the
@@ -329,9 +398,7 @@ internal static class App
                     return IntPtr.Zero;
             }
         }
-        catch
-        {
-        }
+        catch { }
 
         return Win32.DefWindowProc(hwnd, msg, wParam, lParam);
     }

@@ -9,23 +9,67 @@ namespace WinSnip.Capture;
 // frame, crop, write to the Desktop.
 internal static class Snip
 {
+    private const int ShadowPaddingDip = 32;
+
     public static Task<string> FullScreenAsync()
     {
         Win32.GetCursorPos(out POINT cursor);
         IntPtr monitor = Win32.MonitorFromPoint(cursor, MONITOR_DEFAULTTONEAREST);
 
-        GraphicsCaptureItem item = CaptureEngine.ItemForMonitor(monitor)
+        GraphicsCaptureItem item =
+            CaptureEngine.ItemForMonitor(monitor)
             ?? throw new InvalidOperationException("Could not create a capture item for the monitor.");
 
         return CaptureAndSaveAsync(item, crop: null);
     }
 
-    public static Task<string> WindowAsync(IntPtr hwnd)
+    public static Task<string> WindowAsync(IntPtr hwnd, bool includeShadow = false)
     {
-        GraphicsCaptureItem item = CaptureEngine.ItemForWindow(hwnd)
+        if (includeShadow)
+            return WindowWithShadowAsync(hwnd);
+
+        GraphicsCaptureItem item =
+            CaptureEngine.ItemForWindow(hwnd)
             ?? throw new InvalidOperationException("Could not create a capture item for that window.");
 
         return CaptureAndSaveAsync(item, crop: null);
+    }
+
+    private static Task<string> WindowWithShadowAsync(IntPtr hwnd)
+    {
+        if (!TryWindowBounds(hwnd, out RECT bounds))
+            throw new InvalidOperationException("Could not determine the window bounds.");
+
+        uint dpi = Win32.GetDpiForWindow(hwnd);
+        int padding = (int)Math.Ceiling(ShadowPaddingDip * Math.Max(dpi, 96u) / 96d);
+        var captureBounds = new RECT(
+            bounds.Left - padding,
+            bounds.Top - padding,
+            bounds.Right + padding,
+            bounds.Bottom + padding
+        );
+
+        IntPtr monitor = Win32.MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+        var info = new MONITORINFO { cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf<MONITORINFO>() };
+        if (!Win32.GetMonitorInfo(monitor, ref info))
+            throw new InvalidOperationException("GetMonitorInfo failed for the selected window.");
+
+        RECT clipped = Intersect(captureBounds, info.rcMonitor);
+        if (clipped.Width <= 0 || clipped.Height <= 0)
+            throw new InvalidOperationException("The selected window is outside the captured monitor.");
+
+        GraphicsCaptureItem item =
+            CaptureEngine.ItemForMonitor(monitor)
+            ?? throw new InvalidOperationException("Could not create a capture item for the monitor.");
+
+        var local = new RECT(
+            clipped.Left - info.rcMonitor.Left,
+            clipped.Top - info.rcMonitor.Top,
+            clipped.Right - info.rcMonitor.Left,
+            clipped.Bottom - info.rcMonitor.Top
+        );
+
+        return CaptureAndSaveAsync(item, local);
     }
 
     // Regions are cut out of a full monitor capture rather than captured directly - WGC has no
@@ -39,7 +83,8 @@ internal static class Snip
         if (!Win32.GetMonitorInfo(monitor, ref info))
             throw new InvalidOperationException("GetMonitorInfo failed for the selected region.");
 
-        GraphicsCaptureItem item = CaptureEngine.ItemForMonitor(monitor)
+        GraphicsCaptureItem item =
+            CaptureEngine.ItemForMonitor(monitor)
             ?? throw new InvalidOperationException("Could not create a capture item for the monitor.");
 
         // The capture is in monitor-local coordinates; the selection is in virtual-desktop
@@ -48,7 +93,8 @@ internal static class Snip
             region.Left - info.rcMonitor.Left,
             region.Top - info.rcMonitor.Top,
             region.Right - info.rcMonitor.Left,
-            region.Bottom - info.rcMonitor.Top);
+            region.Bottom - info.rcMonitor.Top
+        );
 
         return CaptureAndSaveAsync(item, local);
     }
@@ -71,6 +117,33 @@ internal static class Snip
             shot.Bitmap.Dispose();
         }
     }
+
+    private static bool TryWindowBounds(IntPtr hwnd, out RECT bounds)
+    {
+        if (
+            Win32.DwmGetWindowAttributeRect(
+                hwnd,
+                DWMWA_EXTENDED_FRAME_BOUNDS,
+                out bounds,
+                System.Runtime.InteropServices.Marshal.SizeOf<RECT>()
+            ) == 0
+            && bounds.Width > 0
+            && bounds.Height > 0
+        )
+        {
+            return true;
+        }
+
+        return Win32.GetWindowRect(hwnd, out bounds) && bounds.Width > 0 && bounds.Height > 0;
+    }
+
+    private static RECT Intersect(RECT first, RECT second) =>
+        new(
+            Math.Max(first.Left, second.Left),
+            Math.Max(first.Top, second.Top),
+            Math.Min(first.Right, second.Right),
+            Math.Min(first.Bottom, second.Bottom)
+        );
 
     // With no crop this still clamps to the content size, which is what keeps the undefined region
     // of an oversized pool texture out of the saved file.
