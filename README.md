@@ -2,7 +2,7 @@
 
 Windows 11 tweaking utilities, written in C# / .NET 9.
 
-Five projects live here:
+Six projects live here:
 
 | Project        | What it is                                                                                                       |
 | -------------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -11,6 +11,7 @@ Five projects live here:
 | `src/WinSnip`  | Tray screenshot tool — full screen, region, or click a window. Saves straight to the Desktop.                    |
 | `src/WinView`  | Minimal image viewer — zoom, pan, arrow-key folder navigation. ~0.2 MB, no dependencies beyond the runtime.      |
 | `src/WinShell` | Work in progress. Raw Win32 (no WPF/WinForms) Windows 7-style taskbar and Start menu replacement. See `TODO.md`. |
+| `src/WinVrr`   | Console tool that overrides a monitor's VRR refresh range (CRU-style EDID override) to tame OLED VRR flicker.    |
 
 ## Download
 
@@ -21,6 +22,7 @@ Prebuilt binaries are in [`dist/`](dist), one folder per app and architecture �
   [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0) installed.
 - **WinSnip** — a single self-contained exe. Nothing to install.
 - **WinView** — a single exe; needs the .NET 9 Desktop Runtime.
+- **WinVrr** — a single self-contained exe (`winvrr-x64` / `winvrr-arm64`). Nothing to install.
 
 ## WinUtils
 
@@ -78,6 +80,28 @@ TIFF and ICO work — HEIC, WebP and AVIF do not.
 
 Registration only adds WinView to the "Open with" list; it deliberately does not seize any file type
 as the system default.
+
+## WinVrr
+
+Narrows a monitor's advertised VRR range the same way CRU does: it patches the range limits
+descriptor in a copy of the monitor's EDID, writes it to the `EDID_OVERRIDE` registry key the GPU
+driver reads, and restarts the display adapter. Raising the floor (e.g. `48-240` → `80-240`) bounds
+how far an OLED's refresh rate — and therefore brightness — can swing, which tames VRR flicker;
+frame rates below the floor are handled by LFC at a doubled refresh instead of dragging the panel
+down.
+
+```powershell
+winvrr              # list monitors, factory and override ranges
+winvrr set 80       # raise the floor to 80 Hz, keep the max
+winvrr reset        # back to the factory EDID
+```
+
+Needs an elevated terminal for `set`/`reset` (HKLM write + driver restart; the screen blinks).
+`--monitor <name>` picks one of several monitors, `--no-restart` defers the driver restart. Keep
+`max >= 2x min` or LFC cannot engage below the floor (the tool warns). The override edits only the
+registry copy of the EDID — the monitor itself is untouched, and `winvrr reset` (or CRU's
+`reset-all.exe`) restores stock. Applies to the DisplayPort range; an HDMI 2.1 VRR range lives in a
+different EDID block that this tool does not modify.
 
 ## Build
 
