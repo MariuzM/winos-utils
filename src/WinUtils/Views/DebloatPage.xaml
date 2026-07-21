@@ -99,6 +99,43 @@
                 </StackPanel>
             </controls:ToolCard>
 
+            <controls:ToolCard
+                x:Name="DeviceAppsCard"
+                Icon="UsbPlug24"
+                Title="Manufacturer apps from Windows Update"
+                Status="—">
+                <StackPanel>
+                    <TextBlock
+                        Style="{StaticResource CaptionText}"
+                        FontSize="13"
+                        Margin="0,0,0,14"
+                        Text="Plugging in hardware can make Windows Update silently install the maker's companion app — LG monitor software, Razer Synapse, ASUS Armoury Crate. Turning this off writes the device-metadata policy that blocks those downloads. Drivers keep installing normally." />
+
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource BodyStrongText}" Text="Auto-install device makers' apps" />
+                            <TextBlock x:Name="DeviceAppsStateText" Margin="0,2,0,0" Style="{StaticResource CaptionText}" Text="—" />
+                        </StackPanel>
+                        <ui:ToggleSwitch
+                            x:Name="DeviceAppsToggle"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Click="OnDeviceAppsToggle" />
+                    </Grid>
+
+                    <ui:InfoBar
+                        Severity="Informational"
+                        IsClosable="False"
+                        IsOpen="True"
+                        Title="Also affects device names and icons"
+                        Message="This writes the Group Policy “Prevent automatic download of applications associated with device metadata” (Device Installation). Windows then also stops fetching device metadata, so some devices may show generic names and icons in Devices and Printers instead of the maker's artwork." />
+                </StackPanel>
+            </controls:ToolCard>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

@@ -22,7 +22,7 @@
                 Status="Not scanned">
                 <controls:RemediationSection
                     x:Name="TelemetrySection"
-                    Description="Checks diagnostics data, advertising ID, activity history, location, suggestions, typing data, Cortana and the telemetry services, then turns off whatever is still reporting."
+                    Description="Checks diagnostics data, advertising ID, activity history, location, suggestions, typing data, Cortana, Recall &amp; AI analysis, cloud sync, online speech, Find My Device, update sharing and the telemetry services, then turns off whatever is still reporting."
                     ApplyLabel="Disable all"
                     CompliantTitle="Telemetry is already off"
                     PendingMessage="Review the list below, then click Disable all." />

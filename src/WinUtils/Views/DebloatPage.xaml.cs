@@ -34,6 +34,30 @@ public partial class DebloatPage : UserControl
         EdgeLeftoverSection.ConfirmApply = ConfirmLeftoverClean;
 
         LoadEdgeStatus();
+        RefreshDeviceApps();
+    }
+
+    private void RefreshDeviceApps()
+    {
+        var enabled = DeviceMetadataService.IsAutoDownloadEnabled();
+        DeviceAppsToggle.IsChecked = enabled;
+        DeviceAppsStateText.Text = enabled
+            ? "On — Windows Update auto-installs companion apps for plugged-in devices."
+            : "Off — companion app auto-downloads are blocked.";
+        DeviceAppsCard.Status = enabled ? "Auto-install on" : "Blocked";
+    }
+
+    private void OnDeviceAppsToggle(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            DeviceMetadataService.SetAutoDownloadEnabled(DeviceAppsToggle.IsChecked == true);
+        }
+        catch
+        {
+        }
+
+        RefreshDeviceApps();
     }
 
     private void LoadEdgeStatus()

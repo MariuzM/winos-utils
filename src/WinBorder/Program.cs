@@ -27,7 +27,7 @@ internal static unsafe class Program
     private const uint CreateWaitableTimerHighResolution = 0x0002;
     private const uint TimerAllAccess = 0x1F0003;
     private const uint TimerResolutionMilliseconds = 1;
-    private const int BurstPasses = 40;
+    private const int BurstPasses = 1;
     private const long BurstPassDelay = -20000;
 
     private static nint _burstEvent;

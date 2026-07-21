@@ -41,6 +41,7 @@ public sealed class GamingOptimizer
         ("RetailDemo", "Retail Demo Service", "Bloat"),
         ("WMPNetworkSvc", "Windows Media Player Network Sharing", "Bloat"),
         ("RemoteRegistry", "Remote Registry", "Security"),
+        ("SysMain", "SysMain (Superfetch)", "Performance"),
     };
 
     private readonly List<Rule> _rules;
@@ -156,6 +157,10 @@ public sealed class GamingOptimizer
             );
         }
 
+        rules.Add(DwordRule("Game DVR", "Game DVR disabled by policy", RegistryHive.LocalMachine, @"SOFTWARE\Policies\Microsoft\Windows\GameDVR", "AllowGameDVR", 0));
+        rules.Add(DwordRule("Game DVR", "Game DVR capture off", RegistryHive.CurrentUser, @"System\GameConfigStore", "GameDVR_Enabled", 0));
+        rules.Add(DwordRule("Game DVR", "Background recording off", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "AppCaptureEnabled", 0));
+
         rules.Add(
             new Rule
             {
@@ -204,6 +209,20 @@ public sealed class GamingOptimizer
         );
 
         return rules;
+    }
+
+    private static Rule DwordRule(string category, string title, RegistryHive hive, string path, string name, int desired)
+    {
+        return new Rule
+        {
+            Category = category,
+            Title = title,
+            Evaluate = () =>
+                GetDword(hive, path, name) == desired
+                    ? (CheckState.Compliant, $"Set ({name}={desired})")
+                    : (CheckState.NeedsChange, "Not configured"),
+            Remediate = () => SetDword(hive, path, name, desired),
+        };
     }
 
     private static (CheckState State, string Detail) EvaluateService(string service)

@@ -27,7 +27,7 @@
                         IsClosable="False"
                         IsOpen="True"
                         Title="Only a vetted, conservative list"
-                        Message="This changes a fixed set of known-safe items (telemetry/printing/bloat services and Widgets). Every change is reversible in Windows and none of it touches your games. The process list below is shown for context only." />
+                        Message="This changes a fixed set of known-safe items (telemetry/printing/bloat services, SysMain, Game DVR background recording and Widgets). Every change is reversible in Windows and none of it touches your games. The process list below is shown for context only." />
 
                     <controls:RemediationSection
                         x:Name="GamingSection"
@@ -54,6 +54,92 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                </StackPanel>
+            </controls:ToolCard>
+
+            <controls:ToolCard
+                x:Name="PowerPlanCard"
+                Icon="Flash24"
+                Title="Power plan"
+                Status="Checking">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,14"
+                        Style="{StaticResource CaptionText}"
+                        FontSize="13"
+                        Text="Switch between the Balanced and High performance power plans. High performance keeps the CPU ready at all times instead of parking cores and lowering clocks — measurably snappier on desktops, at the cost of more idle power draw." />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource BodyStrongText}" Text="High performance plan" />
+                            <TextBlock
+                                x:Name="PowerPlanStateText"
+                                Margin="0,2,0,0"
+                                Style="{StaticResource CaptionText}"
+                                Text="Checking active plan." />
+                        </StackPanel>
+                        <ui:ToggleSwitch
+                            x:Name="PowerPlanToggle"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Click="OnPowerPlanToggle" />
+                    </Grid>
+
+                    <ui:InfoBar
+                        x:Name="PowerPlanError"
+                        Margin="0,14,0,0"
+                        Severity="Error"
+                        IsClosable="True"
+                        IsOpen="False"
+                        Title="Power plan change failed" />
+                </StackPanel>
+            </controls:ToolCard>
+
+            <controls:ToolCard
+                x:Name="IndexingCard"
+                Icon="DocumentSearch24"
+                Title="Search indexing"
+                Status="Checking">
+                <StackPanel>
+                    <ui:InfoBar
+                        Margin="0,0,0,14"
+                        Severity="Warning"
+                        IsClosable="False"
+                        IsOpen="True"
+                        Title="Trade-off"
+                        Message="The indexer (WSearch) can keep disks busy in the background. Turning it off frees that up, but Start-menu file and document search stops returning results and Outlook search breaks — app and settings search keep working. Skip this on machines where you search for files often." />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource BodyStrongText}" Text="Index files for search" />
+                            <TextBlock
+                                x:Name="IndexingStateText"
+                                Margin="0,2,0,0"
+                                Style="{StaticResource CaptionText}"
+                                Text="Checking service state." />
+                        </StackPanel>
+                        <ui:ToggleSwitch
+                            x:Name="IndexingToggle"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Click="OnIndexingToggle" />
+                    </Grid>
+
+                    <ui:InfoBar
+                        x:Name="IndexingError"
+                        Margin="0,14,0,0"
+                        Severity="Error"
+                        IsClosable="True"
+                        IsOpen="False"
+                        Title="Search indexing change failed" />
                 </StackPanel>
             </controls:ToolCard>
 

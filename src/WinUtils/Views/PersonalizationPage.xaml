@@ -112,6 +112,90 @@
                 </StackPanel>
             </controls:ToolCard>
 
+            <controls:ToolCard
+                x:Name="WindowShadowsCard"
+                Icon="SquareShadow24"
+                Title="Window shadows"
+                Status="Checking">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,14"
+                        Style="{StaticResource CaptionText}"
+                        FontSize="13"
+                        Text="The DWM border color has no transparent value — removing the border is as far as that API goes. If a thin dark line still hugs window edges afterwards, it's the drop shadow's inner edge showing where the border used to be. Turning shadows off removes that last line." />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource BodyStrongText}" Text="Show shadows under windows" />
+                            <TextBlock
+                                x:Name="WindowShadowsStateText"
+                                Margin="0,2,0,0"
+                                Style="{StaticResource CaptionText}"
+                                Text="Checking current setting." />
+                        </StackPanel>
+                        <ui:ToggleSwitch
+                            x:Name="WindowShadowsToggle"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Click="OnWindowShadowsToggle" />
+                    </Grid>
+
+                    <ui:InfoBar
+                        x:Name="WindowShadowsError"
+                        Margin="0,14,0,0"
+                        Severity="Error"
+                        IsClosable="True"
+                        IsOpen="False"
+                        Title="Window shadow setting failed" />
+                </StackPanel>
+            </controls:ToolCard>
+
+            <controls:ToolCard
+                x:Name="AnimationsCard"
+                Icon="SlideTransition24"
+                Title="Animation effects"
+                Status="Checking">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,14"
+                        Style="{StaticResource CaptionText}"
+                        FontSize="13"
+                        Text="Turn off window minimize/restore animations, menu fades and taskbar animations. Purely cosmetic — everything happens instantly instead of easing in, which makes the machine feel faster." />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource BodyStrongText}" Text="Play animations" />
+                            <TextBlock
+                                x:Name="AnimationsStateText"
+                                Margin="0,2,0,0"
+                                Style="{StaticResource CaptionText}"
+                                Text="Checking current setting." />
+                        </StackPanel>
+                        <ui:ToggleSwitch
+                            x:Name="AnimationsToggle"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Click="OnAnimationsToggle" />
+                    </Grid>
+
+                    <ui:InfoBar
+                        x:Name="AnimationsError"
+                        Margin="0,14,0,0"
+                        Severity="Error"
+                        IsClosable="True"
+                        IsOpen="False"
+                        Title="Animation setting failed" />
+                </StackPanel>
+            </controls:ToolCard>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

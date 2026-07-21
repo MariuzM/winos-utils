@@ -19,6 +19,8 @@ public sealed class TelemetryRemover
     private const string System = @"SOFTWARE\Policies\Microsoft\Windows\System";
     private const string ContentDelivery = @"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager";
     private const string Privacy = @"Software\Microsoft\Windows\CurrentVersion\Privacy";
+    private const string WindowsAI = @"SOFTWARE\Policies\Microsoft\Windows\WindowsAI";
+    private const string SettingSync = @"SOFTWARE\Policies\Microsoft\Windows\SettingSync";
 
     private readonly List<Rule> _rules;
 
@@ -94,6 +96,22 @@ public sealed class TelemetryRemover
             Dword("Diagnostics", "Tailored experiences off", RegistryHive.CurrentUser, Privacy, "TailoredExperiencesWithDiagnosticDataEnabled", 0),
             Dword("Diagnostics", "Customer Experience Program off", RegistryHive.LocalMachine, @"SOFTWARE\Policies\Microsoft\SQMClient\Windows", "CEIPEnable", 0),
             Dword("Diagnostics", "Windows Error Reporting off", RegistryHive.LocalMachine, @"SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting", "Disabled", 1),
+            Dword("Diagnostics", "OneSettings config downloads off", RegistryHive.LocalMachine, DataCollection, "DisableOneSettingsDownloads", 1),
+            Dword("Diagnostics", "Diagnostic log collection limited", RegistryHive.LocalMachine, DataCollection, "LimitDiagnosticLogCollection", 1),
+
+            Dword("Recall & AI", "Recall snapshots disabled", RegistryHive.LocalMachine, WindowsAI, "DisableAIDataAnalysis", 1),
+            Dword("Recall & AI", "Recall cannot be enabled", RegistryHive.LocalMachine, WindowsAI, "AllowRecallEnablement", 0),
+            Dword("Recall & AI", "Click to Do disabled", RegistryHive.LocalMachine, WindowsAI, "DisableClickToDo", 1),
+
+            Dword("Cloud sync", "Cross-device clipboard sync off", RegistryHive.LocalMachine, System, "AllowCrossDeviceClipboard", 0),
+            Dword("Cloud sync", "Settings sync disabled", RegistryHive.LocalMachine, SettingSync, "DisableSettingSync", 2),
+            Dword("Cloud sync", "Settings sync override blocked", RegistryHive.LocalMachine, SettingSync, "DisableSettingSyncUserOverride", 1),
+
+            Dword("Speech", "Online speech recognition off", RegistryHive.CurrentUser, @"Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy", "HasAccepted", 0),
+
+            Dword("Device", "Find My Device off", RegistryHive.LocalMachine, @"SOFTWARE\Policies\Microsoft\FindMyDevice", "AllowFindMyDevice", 0),
+
+            Dword("Updates", "Update sharing with other PCs off", RegistryHive.LocalMachine, @"SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization", "DODownloadMode", 0),
 
             Dword("Advertising", "Advertising ID disabled (machine)", RegistryHive.LocalMachine, @"SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo", "DisabledByGroupPolicy", 1),
             Dword("Advertising", "Advertising ID disabled (user)", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo", "Enabled", 0),
@@ -110,6 +128,7 @@ public sealed class TelemetryRemover
             Dword("Suggestions", "Settings suggestions off", RegistryHive.CurrentUser, ContentDelivery, "SystemPaneSuggestionsEnabled", 0),
             Dword("Suggestions", "Start menu suggestions off", RegistryHive.CurrentUser, ContentDelivery, "SubscribedContent-338388Enabled", 0),
             Dword("Suggestions", "Lock screen tips off", RegistryHive.CurrentUser, ContentDelivery, "SubscribedContent-338387Enabled", 0),
+            Dword("Suggestions", "“Finish setting up” nag off", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement", "ScoobeSystemSettingEnabled", 0),
 
             Dword("Typing", "Inking & typing data collection off", RegistryHive.CurrentUser, @"Software\Microsoft\InputPersonalization", "RestrictImplicitTextCollection", 1),
             Dword("Typing", "Ink collection off", RegistryHive.CurrentUser, @"Software\Microsoft\InputPersonalization", "RestrictImplicitInkCollection", 1),

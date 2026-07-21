@@ -17,6 +17,90 @@ public partial class PersonalizationPage : UserControl
 
         RefreshDarkMode();
         RefreshWindowBorders();
+        RefreshWindowShadows();
+        RefreshAnimations();
+    }
+
+    private async void OnAnimationsToggle(object sender, System.Windows.RoutedEventArgs _)
+    {
+        bool enabled = AnimationsToggle.IsChecked == true;
+        AnimationsToggle.IsEnabled = false;
+        AnimationsError.IsOpen = false;
+
+        try
+        {
+            await Task.Run(() => AnimationManager.SetEnabled(enabled));
+        }
+        catch (Exception e)
+        {
+            AnimationsError.Message = e.Message;
+            AnimationsError.IsOpen = true;
+        }
+
+        RefreshAnimations();
+    }
+
+    private void RefreshAnimations()
+    {
+        try
+        {
+            bool enabled = AnimationManager.IsEnabled();
+            AnimationsToggle.IsChecked = enabled;
+            AnimationsToggle.IsEnabled = true;
+            AnimationsStateText.Text = enabled
+                ? "On — windows and menus animate."
+                : "Off — windows and menus snap instantly.";
+            AnimationsCard.Status = enabled ? "Animations on" : "Animations off";
+        }
+        catch (Exception e)
+        {
+            AnimationsToggle.IsEnabled = false;
+            AnimationsStateText.Text = "Unable to read the current setting.";
+            AnimationsCard.Status = "State unavailable";
+            AnimationsError.Message = e.Message;
+            AnimationsError.IsOpen = true;
+        }
+    }
+
+    private async void OnWindowShadowsToggle(object sender, System.Windows.RoutedEventArgs _)
+    {
+        bool enabled = WindowShadowsToggle.IsChecked == true;
+        WindowShadowsToggle.IsEnabled = false;
+        WindowShadowsError.IsOpen = false;
+
+        try
+        {
+            await Task.Run(() => WindowShadowManager.SetEnabled(enabled));
+        }
+        catch (Exception e)
+        {
+            WindowShadowsError.Message = e.Message;
+            WindowShadowsError.IsOpen = true;
+        }
+
+        RefreshWindowShadows();
+    }
+
+    private void RefreshWindowShadows()
+    {
+        try
+        {
+            bool enabled = WindowShadowManager.IsEnabled();
+            WindowShadowsToggle.IsChecked = enabled;
+            WindowShadowsToggle.IsEnabled = true;
+            WindowShadowsStateText.Text = enabled
+                ? "On — windows cast a drop shadow, visible as a dark edge."
+                : "Off — no shadows, so nothing outlines the window edges.";
+            WindowShadowsCard.Status = enabled ? "Shadows on" : "Shadows off";
+        }
+        catch (Exception e)
+        {
+            WindowShadowsToggle.IsEnabled = false;
+            WindowShadowsStateText.Text = "Unable to read the current setting.";
+            WindowShadowsCard.Status = "State unavailable";
+            WindowShadowsError.Message = e.Message;
+            WindowShadowsError.IsOpen = true;
+        }
     }
 
     private async void OnDarkModeToggle(object sender, System.Windows.RoutedEventArgs _)
