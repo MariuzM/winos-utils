@@ -4,14 +4,14 @@ Windows 11 tweaking utilities, written in C# / .NET 9.
 
 Six projects live here:
 
-| Project        | What it is                                                                                                       |
-| -------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `src/WinUtils` | WPF app with the debloat / privacy / performance tools. Runs against the .NET 9 Desktop Runtime.                 |
-| `src/WinBorder` | Tiny event-driven helper that removes Windows 11 DWM window borders. Published with Native AOT.                 |
-| `src/WinSnip`  | Tray screenshot tool — full screen, region, or click a window. Saves straight to the Desktop.                    |
-| `src/WinView`  | Minimal image viewer — zoom, pan, arrow-key folder navigation. ~0.2 MB, no dependencies beyond the runtime.      |
-| `src/WinShell` | Work in progress. Raw Win32 (no WPF/WinForms) Windows 7-style taskbar and Start menu replacement. See `TODO.md`. |
-| `src/WinVrr`   | Console tool that overrides a monitor's VRR refresh range (CRU-style EDID override) to tame OLED VRR flicker.    |
+| Project         | What it is                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `src/WinUtils`  | WPF app with the debloat / privacy / performance tools. Runs against the .NET 9 Desktop Runtime.                 |
+| `src/WinBorder` | Tiny event-driven helper that removes Windows 11 DWM window borders. Published with Native AOT.                  |
+| `src/WinSnip`   | Tray screenshot tool — full screen, region, or click a window. Saves straight to the Desktop.                    |
+| `src/WinView`   | Minimal image viewer — zoom, pan, arrow-key folder navigation. ~0.2 MB, no dependencies beyond the runtime.      |
+| `src/WinShell`  | Work in progress. Raw Win32 (no WPF/WinForms) Windows 7-style taskbar and Start menu replacement. See `TODO.md`. |
+| `src/WinVrr`    | Console tool that overrides a monitor's VRR refresh range (CRU-style EDID override) to tame OLED VRR flicker.    |
 
 ## Download
 
@@ -26,6 +26,8 @@ Prebuilt binaries are in [`dist/`](dist), one folder per app and architecture �
 
 ## WinUtils
 
+![WinUtils Debloat screen](assets/screen.png)
+
 Six pages, each a list of toggles that report what they changed:
 
 - **System** — passwordless sign-in (auto-login)
@@ -36,9 +38,9 @@ Six pages, each a list of toggles that report what they changed:
 - **Personalization** — dark mode, Start menu, window borders and shell tweaks
 
 The window-border toggle starts `WinBorder.exe` in the current desktop session and registers it for
-future sign-ins. The helper has no tray icon and does not poll: it blocks in the Windows message loop
-until a window is shown or activation changes, and keeps borders removed from both active and inactive
-windows. Turning the toggle off stops the helper and restores the default DWM border color.
+future sign-ins. The helper has no tray icon and does not poll: it blocks in the Windows message
+loop until a window is shown or activation changes, and keeps borders removed from both active and
+inactive windows. Turning the toggle off stops the helper and restores the default DWM border color.
 
 ### Auto-login
 
@@ -60,8 +62,8 @@ no editor, no save dialog.
 - `Ctrl+Shift+2` — drag a region
 - `Ctrl+Shift+3` — hover a window, click to capture it
 
-Right-click the tray icon and enable **Include window shadow** to capture the composed Windows shadow
-and a small surrounding desktop margin with window captures.
+Right-click the tray icon and enable **Include window shadow** to capture the composed Windows
+shadow and a small surrounding desktop margin with window captures.
 
 `Esc` or right-click cancels. Capture uses Windows.Graphics.Capture, so hardware-accelerated windows
 (Chrome, Electron, games) come out correctly rather than black.
@@ -119,7 +121,8 @@ Publishing `WinBorder.exe` with Native AOT requires Windows. When cross-publishi
 macOS or Linux, add `-p:WinBorderNativeAot=false`; the helper then uses the .NET 9 runtime already
 required by WinUtils.
 
-Adding `-p:EnableWindowsTargeting=true` lets the managed projects build from macOS or Linux, WPF included.
+Adding `-p:EnableWindowsTargeting=true` lets the managed projects build from macOS or Linux, WPF
+included.
 
 Formatting is handled by [CSharpier](https://csharpier.com):
 
